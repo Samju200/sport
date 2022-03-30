@@ -19,7 +19,7 @@ function Navbar() {
       <div className="logo">
         <Link to="/">SPORT GAMING </Link>
       </div>
-      <ul>
+      <ul className="nav">
         {user ? (
           <li>
             <button className="btn" onClick={onLogout}>
