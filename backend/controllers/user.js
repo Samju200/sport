@@ -4,7 +4,6 @@ const crypto = require('crypto');
 // const sendgridTransport = require('nodemailer-sendgrid-transport');
 const User = require('../models/User');
 const Token = require('../models/Token');
-const CryptoJS = require('crypto-js');
 const sgMail = require('@sendgrid/mail');
 const jwt = require('jsonwebtoken');
 const UserDetails = require('../models/UserDetails');

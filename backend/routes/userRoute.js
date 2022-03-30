@@ -4,8 +4,6 @@ const {
   Signup,
   ConfirmEmail,
   ResendLink,
-  updatePassword,
-  Register,
   getUser,
   getAllUser,
 } = require('../controllers/user');
