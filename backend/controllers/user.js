@@ -1,0 +1,315 @@
+const Bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+// const nodemailer = require('nodemailer');
+// const sendgridTransport = require('nodemailer-sendgrid-transport');
+const User = require('../models/User');
+const Token = require('../models/Token');
+const CryptoJS = require('crypto-js');
+const sgMail = require('@sendgrid/mail');
+const jwt = require('jsonwebtoken');
+const UserDetails = require('../models/UserDetails');
+const path = require('path');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + '-' + Date.now());
+  },
+});
+
+const upload = multer({ storage: storage });
+
+const Login = async (req, res, next) => {
+  try {
+    const user =
+      (await User.findOne({ email: req.body.email })) ||
+      (await User.findOne({ phoneNumber: req.body.phoneNumber }));
+    if (!user?.email || !user?.phoneNumber) {
+      return res.status(401).send({
+        msg: `The Email Address or Phone Number is not associated with any account. please check and try again!`,
+      });
+    }
+    // compare user's password if user is find in above step
+    else if (!Bcrypt.compareSync(req.body.password, user.password)) {
+      return res.status(401).send({ msg: 'Wrong Password!' });
+    }
+    // check user is verified or not
+    else if (!user.isVerified) {
+      return res.status(401).send({
+        msg: 'Your Email has not been verified. Please click on resend confirmation link',
+      });
+    }
+    // user successfully logged in
+    else {
+      return res.status(200).json(user);
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+const Signup = async (req, res, next) => {
+  const user =
+    (await User.findOne({ email: req.body.email })) ||
+    (await User.findOne({ phoneNumber: req.body.phoneNumber }));
+
+  console.log(user);
+  try {
+    // if email is exist into database i.e. email is associated with another user.
+    if (user) {
+      return res.status(400).send({
+        msg: 'This email address or Phone Number is already associated with another account.',
+      });
+    }
+    // if user is not exist into database then save the user into database for register account
+    else {
+      // password hashing for save into database
+      req.body.password = Bcrypt.hashSync(req.body.password, 10);
+      // create and save user
+      const newUser = new User({
+        email: req.body.email,
+        password: req.body.password,
+        phoneNumber: req.body.phoneNumber,
+        username: req.body.username,
+        interest: req.body.interest,
+        // picture: {
+        //   data: fs.readFileSync(
+        //     path.join(__dirname + '/uploads/' + req.file.filename)
+        //   ),
+        //   contentType: 'image/png',
+        // },
+      });
+      newUser.save();
+      res.status(201).json(newUser);
+      // generate token and save
+      const userNew =
+        (await User.findOne({ email: req.body.email })) ||
+        (await User.findOne({ phoneNumber: req.body.phoneNumber }));
+
+      const accessToken = new Token({
+        _userId: userNew._id,
+        token: crypto.randomBytes(16).toString('hex'),
+      });
+      accessToken.save();
+      console.log(accessToken);
+
+      // console.log(accessToken);
+
+      // Send email (use verified sender's email address & generated API_KEY on SendGrid)
+      sgMail.setApiKey(process.env.SENDGRID_APIKEY);
+
+      const mailOptions = {
+        from: 'samju7778@gmail.com',
+        to: req.body.email,
+        subject: 'Account Verification Link',
+        text:
+          'Hello ' +
+          ',\n\n' +
+          'Please verify your account by clicking the link: \nhttp://' +
+          req.headers.host +
+          '/confirmation/' +
+          req.body.email +
+          '/' +
+          accessToken.token +
+          '\n\nThank You!\n',
+      };
+      sgMail
+        .send(mailOptions)
+        .then((res) => console.log(' Email sent'))
+        .catch((error) => console.log(error));
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'something went wrong' });
+  }
+};
+const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    const { password, ...others } = user._doc;
+    res.status(200).json(others);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+const getAllUser = async (req, res) => {
+  const query = req.query.new;
+  try {
+    const users = query
+      ? await User.find().sort({ _id: -1 }).limit(5)
+      : await User.find();
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+// It is GET method, you have to write like that
+//    app.get('/confirmation/:email/:token',confirmEmail)
+
+const ConfirmEmail = async (req, res, next) => {
+  const accessToken = await Token.findOne({ token: req.params.token });
+  try {
+    if (!accessToken) {
+      return res.status(400).send({
+        msg: 'Your verification link may have expired. Please click on resend for verify your Email.',
+      });
+    }
+    // if token is found then check valid user
+    else {
+      const user = await User.findOne({
+        _id: accessToken._id,
+        email: req.params.email,
+      });
+      // not valid user
+      if (!user) {
+        return res.status(401).send({
+          msg: 'We were unable to find a user for this verification. Please SignUp!',
+        });
+      }
+      // user is already verified
+      else if (user.isVerified) {
+        return res
+          .status(200)
+          .send('User has been already verified. Please Login');
+      }
+      // verify user
+      else {
+        // change isVerified to true
+        user.isVerified = true;
+        user.save(function (err) {
+          // error occur
+          if (err) {
+            return res.status(500).send({ msg: err.message });
+          }
+          // account successfully verified
+          else {
+            return res
+              .status(200)
+              .send('Your account has been successfully verified');
+          }
+        });
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'something went wrong' });
+  }
+};
+
+const ResendLink = async (req, res, next) => {
+  const id = req.params.id;
+  console.log(id);
+  const user = await User.findOne({ _id: id });
+  console.log(user);
+  try {
+    // user is not found into database
+    if (!user) {
+      return res.status(400).send({
+        msg: 'We were unable to find a user with that email. Make sure your Email is correct!',
+      });
+    }
+    // user has been already verified
+    else if (user.isVerified) {
+      return res
+        .status(200)
+        .send('This account has been already verified. Please log in.');
+    }
+    // send verification link
+    else {
+      // generate token and save
+      const accessToken = new Token({
+        _userId: user._id,
+        token: crypto.randomBytes(16).toString('hex'),
+      });
+      accessToken.save();
+      // console.log(accessToken);
+
+      // Send email (use verified sender's email address & generated API_KEY on SendGrid)
+      sgMail.setApiKey(process.env.SENDGRID_APIKEY);
+
+      const mailOptions = {
+        from: 'samju7778@gmail.com',
+        to: user.email,
+        subject: 'Account Verification Link',
+        text:
+          'Hello ' +
+          ',\n\n' +
+          'Please verify your account by clicking the link: \nhttp://' +
+          req.headers.host +
+          '/confirmation/' +
+          user.email +
+          '/' +
+          accessToken.token +
+          '\n\nThank You!\n',
+      };
+
+      sgMail
+        .send(mailOptions)
+        .then((res) => console.log(' Email sent'))
+        .catch((error) => console.log(error));
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'something went wrong' });
+  }
+};
+
+const updatePassword = async (req, res) => {
+  const id = req.params.id;
+  try {
+    req.body.password = Bcrypt.hashSync(req.body.password, 10);
+    const userPassword = await User.findByIdAndUpdate(
+      { _id: id },
+      {
+        password: req.body.password,
+      },
+      { new: true }
+    );
+    return res.status(200).json({ userPassword });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+const updateEmail = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const userEmail = await User.findByIdAndUpdate(
+      { _id: id },
+      {
+        email: req.body.email,
+      },
+      { new: true }
+    );
+    return res.status(200).json({ userEmail });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+const updateUsername = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const username = await User.findByIdAndUpdate(
+      { _id: id },
+      {
+        username: req.body.username,
+      },
+      { new: true }
+    );
+    return res.status(200).json({ username });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+module.exports = {
+  Login,
+  Signup,
+  ConfirmEmail,
+  ResendLink,
+  updatePassword,
+  updateUsername,
+  updateEmail,
+  getUser,
+  getAllUser,
+};
