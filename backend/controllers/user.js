@@ -1,7 +1,5 @@
 const Bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-// const nodemailer = require('nodemailer');
-// const sendgridTransport = require('nodemailer-sendgrid-transport');
 const User = require('../models/User');
 const Token = require('../models/Token');
 const sgMail = require('@sendgrid/mail');
