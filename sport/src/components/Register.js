@@ -1,11 +1,11 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-// import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaUser } from 'react-icons/fa';
-// import { register, reset } from '../features/auth/authSlice';
-// import Spinner from '../components/Spinner';
+import { register, reset } from '../features/auth/authSlice';
+import Spinner from './Spinner';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -16,26 +16,26 @@ function Register() {
     interest: '',
   });
 
-  const { name, email, password, interest, username, phoneNumber } = formData;
+  const { email, password, phoneNumber, username, interest } = formData;
 
-  //   const navigate = useNavigate()
-  //   const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  //   const { user, isLoading, isError, isSuccess, message } = useSelector(
-  //     (state) => state.auth
-  //   )
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
 
-  //   useEffect(() => {
-  //     if (isError) {
-  //       toast.error(message)
-  //     }
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
 
-  //     if (isSuccess || user) {
-  //       navigate('/')
-  //     }
+    if (isSuccess || user) {
+      navigate('/');
+    }
 
-  //     dispatch(reset())
-  //   }, [user, isError, isSuccess, message, navigate, dispatch])
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -47,24 +47,21 @@ function Register() {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    // if (password !== password2) {
-    //   toast.error('Passwords do not match');
-    // } else {
-    //   const userData = {
-    //     name,
-    //     email,
-    //     password,
-    //     username,
-    //     interest,
-    //   };
+    const userData = {
+      email,
+      password,
+      phoneNumber,
+      username,
+      interest,
+    };
 
-    //   //   dispatch(register(userData))
-    // }
+    dispatch(register(userData));
+    console.log(userData);
   };
 
-  //   if (isLoading) {
-  //     return <Spinner />
-  //   }
+  if (isLoading) {
+    return <Spinner />;
+  }
   return (
     <>
       <section className="heading">
@@ -76,17 +73,6 @@ function Register() {
 
       <section className="form">
         <form onSubmit={onSubmit}>
-          <div className="form-group">
-            <input
-              type="text"
-              className="form-control"
-              id="username"
-              name="username"
-              value={username}
-              placeholder="Enter your username"
-              onChange={onChange}
-            />
-          </div>
           <div className="form-group">
             <input
               type="email"
@@ -117,6 +103,17 @@ function Register() {
               name="phoneNumber"
               value={phoneNumber}
               placeholder="Phone Number"
+              onChange={onChange}
+            />
+          </div>
+          <div className="form-group">
+            <input
+              type="text"
+              className="form-control"
+              id="username"
+              name="username"
+              value={username}
+              placeholder="Enter your username"
               onChange={onChange}
             />
           </div>
