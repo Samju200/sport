@@ -31,7 +31,7 @@ function Register() {
     }
 
     if (isSuccess || user) {
-      navigate('/');
+      navigate('/verification');
     }
 
     dispatch(reset());

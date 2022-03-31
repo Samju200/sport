@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API_URL_REGISTER = '/users/signup';
 const API_URL_LOGIN = '/users/login';
-const API_URL_VERIFICATION = '/users//confirmation/:email/{userData.token}';
 
 // Register user
 const register = async (userData) => {
@@ -14,9 +13,18 @@ const register = async (userData) => {
 
   return response.data;
 };
+
 // verify
-const verification = async (userData) => {
-  const response = await axios.get(API_URL_VERIFICATION, userData);
+const verification = async (userData, email, token) => {
+  const response = await axios.get(`confirmation${email}${token}`, userData);
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data));
+  }
+
+  return response.data.isVerified;
+};
+const resendVerification = async (userData, id) => {
+  const response = await axios.get(`users/${id}resend`, userData);
   if (response.data) {
     localStorage.setItem('user', JSON.stringify(response.data));
   }
@@ -33,7 +41,15 @@ const login = async (userData) => {
 
   return response.data;
 };
+// get user
+const getUser = async (userData, id) => {
+  const response = await axios.get(`/users/${id}`, userData);
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data));
+  }
 
+  return response.data.isVerified;
+};
 // Logout user
 const logout = () => {
   localStorage.removeItem('user');
@@ -43,6 +59,9 @@ const authService = {
   register,
   logout,
   login,
+  verification,
+  getUser,
+  resendVerification,
 };
 
 export default authService;

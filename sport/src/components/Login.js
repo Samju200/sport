@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FaSignInAlt } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { login, reset } from '../features/auth/authSlice';
 import Spinner from './Spinner';
@@ -54,7 +54,13 @@ function Login() {
   if (isLoading) {
     return <Spinner />;
   }
-
+  const resendVerification = (id) => {
+    if (user.isVerified) {
+      alert('Your Account is verify');
+    } else {
+      dispatch(resendVerification(id));
+    }
+  };
   return (
     <>
       <section className="heading">
@@ -95,6 +101,15 @@ function Login() {
             </button>
           </div>
         </form>
+
+        <div>
+          <p className="verify">
+            if you have not Register , Register{' '}
+            <Link to="/register"> here</Link> and resend verification link, if
+            your account is not verify or check your email for confirmation of
+            your verification <Link to={resendVerification}>click</Link>
+          </p>
+        </div>
       </section>
     </>
   );

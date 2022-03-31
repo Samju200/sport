@@ -4,6 +4,8 @@ import Register from './components/Register';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
+import Landing from './components/Landing';
+import Verification from './components/Verification';
 
 function App() {
   return (
@@ -12,7 +14,12 @@ function App() {
         <Navbar />
         <div className="App">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Landing />} />
+            <Route
+              path="/confirmation/:email/:token"
+              element={<Verification />}
+            />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Routes>

@@ -29,6 +29,22 @@ export const register = createAsyncThunk(
     }
   }
 );
+export const Verification = createAsyncThunk(
+  'auth/verification',
+  async (user, thunkAPI) => {
+    try {
+      return await authService.verification(user);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 // Login user
 export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
@@ -42,6 +58,39 @@ export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
+
+export const resendVerification = createAsyncThunk(
+  'auth/register',
+  async (user, thunkAPI) => {
+    try {
+      return await authService.resendVerification(user);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+export const getUser = createAsyncThunk(
+  'auth/register',
+  async (user, thunkAPI) => {
+    try {
+      return await authService.getUser(user);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 export const logout = createAsyncThunk('auth/logout', async () => {
   await authService.logout();
