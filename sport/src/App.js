@@ -15,10 +15,7 @@ function App() {
         <div className="App">
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route
-              path="/confirmation/:email/:token"
-              element={<Verification />}
-            />
+            <Route path="/verification" element={<Verification />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

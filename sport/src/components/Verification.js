@@ -1,14 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 function Verification() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.auth);
   const resendVerification = (id) => {
     if (user.isVerified) {
       alert('Your Account is verify');
+      navigate('dashbord');
     } else {
       dispatch(resendVerification(id));
     }
