@@ -50,6 +50,14 @@ const getUser = async (userData, id) => {
 
   return response.data.isVerified;
 };
+const getToken = async (userData, id) => {
+  const response = await axios.get(`/${id}/token`, userData);
+  if (response.data) {
+    localStorage.setItem('token', JSON.stringify(response.data));
+  }
+
+  return response.data.isVerified;
+};
 // Logout user
 const logout = () => {
   localStorage.removeItem('user');
@@ -62,6 +70,7 @@ const authService = {
   verification,
   getUser,
   resendVerification,
+  getToken,
 };
 
 export default authService;

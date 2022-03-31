@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { FaUser } from 'react-icons/fa';
 import { register, reset } from '../features/auth/authSlice';
 import Spinner from './Spinner';
+import { getToken } from '../../../backend/controllers/user';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -30,7 +31,9 @@ function Register() {
       toast.error(message);
     }
 
-    if (isSuccess || user) {
+    if (user.isVerify) {
+      navigate('/dashboard');
+    } else {
       navigate('/verification');
     }
 
@@ -54,8 +57,13 @@ function Register() {
       username,
       interest,
     };
+    const tokenData = {
+      token,
+      _userId: user._id,
+    };
 
     dispatch(register(userData));
+    dispatch(getToken(tokenData));
     console.log(userData);
   };
 

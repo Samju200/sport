@@ -131,6 +131,15 @@ const getUser = async (req, res) => {
     res.status(500).json(err);
   }
 };
+const getToken = async (req, res) => {
+  try {
+    const token = await Token.findOne({ _userId: req.params.id });
+
+    res.status(200).json(token);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
 const getAllUser = async (req, res) => {
   const query = req.query.new;
   try {
@@ -309,4 +318,5 @@ module.exports = {
   updateEmail,
   getUser,
   getAllUser,
+  getToken,
 };
