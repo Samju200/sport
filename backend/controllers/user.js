@@ -87,7 +87,7 @@ const Signup = async (req, res, next) => {
         // },
       });
       newUser.save();
-      res.status(201).json(newUser);
+      res.status(201).json({ userNew, token: generateToken(newUser_id) });
       // generate token and save
       const userNew =
         (await User.findOne({ email: req.body.email })) ||
