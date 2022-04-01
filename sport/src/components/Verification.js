@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import Verify from './Verify';
 
 function Verification() {
   const dispatch = useDispatch();
@@ -15,11 +16,11 @@ function Verification() {
       dispatch(resendVerification(id));
     }
   };
-  //   useEffect(() => {
-  //      if(!user.isVerified){
-
-  //      }
-  //   }, [input])
+  useEffect(() => {
+    if (!user.isVerified) {
+      <Link to={`/confirmation/${user.email}/${user}`}></Link>;
+    }
+  }, []);
   return (
     <div className="verification">
       <h1>Verification</h1>

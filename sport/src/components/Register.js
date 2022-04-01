@@ -58,9 +58,9 @@ function Register() {
       username,
       interest,
     };
-
+    const token = user._id;
     dispatch(register(userData));
-    dispatch(getToken());
+    dispatch(getToken(token));
     console.log(userData);
   };
 

@@ -4,7 +4,7 @@ const User = require('../models/User');
 const Token = require('../models/Token');
 const sgMail = require('@sendgrid/mail');
 const jwt = require('jsonwebtoken');
-const UserDetails = require('../models/UserDetails');
+
 const path = require('path');
 const multer = require('multer');
 
@@ -78,7 +78,6 @@ const Signup = async (req, res, next) => {
         phoneNumber: req.body.phoneNumber,
         username: req.body.username,
         interest: req.body.interest,
-        token: crypto.randomBytes(16).toString('hex'),
 
         // picture: {
         //   data: fs.readFileSync(
@@ -90,18 +89,18 @@ const Signup = async (req, res, next) => {
       newUser.save();
       res.status(201).json(newUser);
       // generate token and save
-      // const userNew =
-      //   (await User.findOne({ email: req.body.email })) ||
-      //   (await User.findOne({ phoneNumber: req.body.phoneNumber }));
+      const userNew =
+        (await User.findOne({ email: req.body.email })) ||
+        (await User.findOne({ phoneNumber: req.body.phoneNumber }));
 
-      // const accessToken = new Token({
-      //   _userId: userNew._id,
-      //   token: crypto.randomBytes(16).toString('hex'),
-      // });
-      // accessToken.save();
-      // console.log(accessToken);
+      const accessToken = new Token({
+        _userId: userNew._id,
+        token: crypto.randomBytes(16).toString('hex'),
+      });
+      accessToken.save();
+      console.log(accessToken);
 
-      // console.log(accessToken);
+      console.log(accessToken);
 
       // Send email (use verified sender's email address & generated API_KEY on SendGrid)
       sgMail.setApiKey(process.env.SENDGRID_APIKEY);
@@ -140,23 +139,11 @@ const getUser = async (req, res) => {
   }
 };
 
-const getAllUser = async (req, res) => {
-  const query = req.query.new;
-  try {
-    const users = query
-      ? await User.find().sort({ _id: -1 }).limit(5)
-      : await User.find();
-    res.status(200).json(users);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-};
-
 // It is GET method, you have to write like that
 //    app.get('/confirmation/:email/:token',confirmEmail)
 
 const ConfirmEmail = async (req, res, next) => {
-  const accessToken = await User.findOne({ token: req.params.token });
+  const accessToken = await Token.findOne({ token: req.params.token });
   try {
     if (!accessToken) {
       return res.status(400).send({
@@ -205,14 +192,14 @@ const ConfirmEmail = async (req, res, next) => {
 
 const ResendLink = async (req, res, next) => {
   const id = req.params.id;
-  console.log(id);
   const user = await User.findOne({ _id: id });
-  console.log(user);
+  const token = await Token.findOne({ _userId: id });
+
   try {
     // user is not found into database
     if (!user) {
       return res.status(400).send({
-        msg: 'We were unable to find a user with that email. Make sure your Email is correct!',
+        msg: 'We were unable to find a user with that email. Make sure your Email is correct !',
       });
     }
     // user has been already verified
@@ -224,13 +211,6 @@ const ResendLink = async (req, res, next) => {
     // send verification link
     else {
       // generate token and save
-      // const accessToken = new Token({
-      //   _userId: user._id,
-      //   token: crypto.randomBytes(16).toString('hex'),
-      // });
-      // accessToken.save();
-      // console.log(accessToken);
-
       // Send email (use verified sender's email address & generated API_KEY on SendGrid)
       sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 
@@ -246,7 +226,7 @@ const ResendLink = async (req, res, next) => {
           '/confirmation/' +
           user.email +
           '/' +
-          user.token +
+          token.token +
           '\n\nThank You!\n',
       };
 
@@ -254,6 +234,8 @@ const ResendLink = async (req, res, next) => {
         .send(mailOptions)
         .then((res) => console.log(' Email sent'))
         .catch((error) => console.log(error));
+
+      res.status(200).json(token);
     }
   } catch (error) {
     res.status(500).json({ message: 'something went wrong' });
@@ -306,7 +288,18 @@ const updateUsername = async (req, res) => {
     res.status(500).json(err);
   }
 };
+const getToken = async (req, res) => {
+  const id = req.params.id;
 
+  try {
+    const token = await Token.findOne({ _userId: id });
+    if (!token) {
+      return res.status(200).send('No Token for this user. Please register.');
+    } else {
+      return res.status(200).json({ token });
+    }
+  } catch (error) {}
+};
 module.exports = {
   Login,
   Signup,
@@ -316,5 +309,5 @@ module.exports = {
   updateUsername,
   updateEmail,
   getUser,
-  getAllUser,
+  getToken,
 };

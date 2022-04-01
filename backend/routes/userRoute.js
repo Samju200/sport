@@ -5,14 +5,15 @@ const {
   ConfirmEmail,
   ResendLink,
   getUser,
-  getAllUser,
+  getToken,
 } = require('../controllers/user');
 const multer = require('multer');
 
 router.post('/signup', Signup);
 router.post('/login', Login);
 router.get('/:id', getUser);
-router.get('/', getAllUser);
+router.get('/:id/token', getToken);
+
 router.get('/confirmation/:email/:token', ConfirmEmail);
 router.post('/:id/resend', ResendLink);
 // router.get('/:id', updatePassword);
