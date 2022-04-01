@@ -60,11 +60,13 @@ function Register() {
     };
 
     dispatch(register(userData));
-    console.log(userData);
   };
 
   if (isLoading) {
     return <Spinner />;
+  }
+  if (isSuccess || user) {
+    navigate('/verification');
   }
   return (
     <>

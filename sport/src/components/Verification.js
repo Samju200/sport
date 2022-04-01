@@ -1,24 +1,27 @@
 import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Verify from './Verify';
 
 function Verification() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const { id } = useParams();
   const { user } = useSelector((state) => state.auth);
-  const resendVerification = (id) => {
+  const { token } = useSelector((state) => state.token);
+  const resendVerification = () => {
     if (user.isVerified) {
       alert('Your Account is verify');
-      navigate('dashbord');
+      navigate('/login');
     } else {
-      dispatch(resendVerification(id));
+      dispatch(resendVerification(user._id));
     }
   };
   useEffect(() => {
     if (!user.isVerified) {
-      <Link to={`/confirmation/${user.email}/${user}`}></Link>;
+      <Link to={`/confirmation/${user.email}/${token.token}`}>
+        <Verify />
+      </Link>;
     }
   }, []);
   return (

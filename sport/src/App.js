@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
 import Landing from './components/Landing';
 import Verification from './components/Verification';
+import Verify from './components/Verify';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/confirmation/:email/:token" element={<Verify />} />
           </Routes>
         </div>
       </Router>
