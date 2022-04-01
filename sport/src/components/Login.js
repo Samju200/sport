@@ -3,7 +3,7 @@ import { FaSignInAlt } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { login, reset } from '../features/auth/authSlice';
+import { login, resendVerification, reset } from '../features/auth/authSlice';
 import Spinner from './Spinner';
 
 function Login() {
@@ -29,6 +29,11 @@ function Login() {
     // if (isSuccess || user.isV) {
     //   navigate('/');
     // }
+    if (user.isVerified) {
+      navigate('/dashboard');
+    } else {
+      navigate('/verification');
+    }
 
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
@@ -54,13 +59,7 @@ function Login() {
   if (isLoading) {
     return <Spinner />;
   }
-  useEffect(() => {
-    if (user.isVerified) {
-      navigate('/dashboard');
-    } else {
-      navigate('/verification');
-    }
-  }, [user])();
+
   return (
     <>
       <section className="heading">
@@ -107,7 +106,8 @@ function Login() {
             if you have not Register , Register{' '}
             <Link to="/register"> here</Link> and resend verification link, if
             your account is not verify or check your email for confirmation of
-            your verification <Link to={resendVerification}>click</Link>
+            your verification{' '}
+            <Link to={dispatch(resendVerification(user._id))}>click</Link>
           </p>
         </div>
       </section>
