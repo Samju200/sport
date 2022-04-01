@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaUser } from 'react-icons/fa';
 import { register, reset } from '../features/auth/authSlice';
@@ -48,7 +48,7 @@ function Register() {
     }));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = (e, id) => {
     e.preventDefault();
 
     const userData = {
@@ -60,6 +60,7 @@ function Register() {
     };
 
     dispatch(register(userData));
+    dispatch(getToken(id));
   };
 
   if (isLoading) {
@@ -140,6 +141,14 @@ function Register() {
             </button>
           </div>
         </form>
+        <div>
+          <p className="verify">
+            if you have Register ,<Link to="/login"> Login</Link> and resend
+            verification link, if your account is not verify or check your email
+            for confirmation of your verification{' '}
+            <Link to="/verification">click</Link>
+          </p>
+        </div>
       </section>
     </>
   );

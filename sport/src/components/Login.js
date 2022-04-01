@@ -29,10 +29,8 @@ function Login() {
     // if (isSuccess || user.isV) {
     //   navigate('/');
     // }
-    if (user.isVerified) {
+    if (user) {
       navigate('/dashboard');
-    } else {
-      navigate('/verification');
     }
 
     dispatch(reset());
@@ -106,8 +104,7 @@ function Login() {
             if you have not Register , Register{' '}
             <Link to="/register"> here</Link> and resend verification link, if
             your account is not verify or check your email for confirmation of
-            your verification{' '}
-            <Link to={dispatch(resendVerification(user._id))}>click</Link>
+            your verification <Link to="/verification">click</Link>
           </p>
         </div>
       </section>

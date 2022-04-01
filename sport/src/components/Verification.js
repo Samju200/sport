@@ -7,21 +7,21 @@ function Verification() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  const { user } = useSelector((state) => state.auth);
+  const { user, resendVerification } = useSelector((state) => state.auth);
   const { token } = useSelector((state) => state.token);
-  const resendVerification = () => {
-    if (user.isVerified) {
-      alert('Your Account is verify');
-      navigate('/login');
-    } else {
-      dispatch(resendVerification(user._id));
-    }
-  };
+  // const resendVerify = () => {
+  //   if (user) {
+  //     alert('Your Account is verify');
+  //     navigate('/login');
+  //   } else {
+  //     dispatch(resendVerification(id));
+  //   }
+  // };
   useEffect(() => {
     if (!user.isVerified) {
-      <Link to={`/confirmation/${user.email}/${token.token}`}>
-        <Verify />
-      </Link>;
+      // <Link to={`/confirmation/${user.email}/${token.token}`}>
+      <Verify />;
+      // </Link>;
     }
   }, []);
   return (

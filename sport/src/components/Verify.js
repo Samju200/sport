@@ -3,8 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 function Verify() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  //   const dispatch = useDispatch();
+  //   const navigate = useNavigate();
   const { id, email, token } = useParams();
   const { user } = useSelector((state) => state.auth);
   useEffect(() => {
@@ -13,7 +13,7 @@ function Verify() {
     } else {
       alert('email not found');
     }
-  }, [user]);
+  }, [user, email]);
   return (
     <div>
       <h1>Verify</h1>
