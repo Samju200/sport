@@ -26,9 +26,9 @@ function Login() {
       toast.error(message);
     }
 
-    if (isSuccess || user) {
-      navigate('/');
-    }
+    // if (isSuccess || user.isV) {
+    //   navigate('/');
+    // }
 
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
@@ -54,13 +54,13 @@ function Login() {
   if (isLoading) {
     return <Spinner />;
   }
-  const resendVerification = (id) => {
+  useEffect(() => {
     if (user.isVerified) {
-      alert('Your Account is verify');
+      navigate('/dashboard');
     } else {
-      dispatch(resendVerification(id));
+      navigate('/verification');
     }
-  };
+  }, [user])();
   return (
     <>
       <section className="heading">
