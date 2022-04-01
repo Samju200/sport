@@ -17,12 +17,6 @@ const storage = multer.diskStorage({
   },
 });
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SEC, {
-    expiresIn: '30d',
-  });
-};
-
 const upload = multer({ storage: storage });
 
 const Login = async (req, res, next) => {
@@ -87,7 +81,7 @@ const Signup = async (req, res, next) => {
         // },
       });
       newUser.save();
-      res.status(201).json({ userNew, token: generateToken(newUser_id) });
+
       // generate token and save
       const userNew =
         (await User.findOne({ email: req.body.email })) ||
@@ -100,8 +94,8 @@ const Signup = async (req, res, next) => {
       accessToken.save();
       console.log(accessToken);
 
-      console.log(accessToken);
-
+      // console.log(accessToken);
+      res.status(201).json({ userNew, accessToken });
       // Send email (use verified sender's email address & generated API_KEY on SendGrid)
       sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 
@@ -117,7 +111,7 @@ const Signup = async (req, res, next) => {
           '/confirmation/' +
           req.body.email +
           '/' +
-          newUser.token +
+          accessToken.token +
           '\n\nThank You!\n',
       };
       sgMail
@@ -299,6 +293,11 @@ const getToken = async (req, res) => {
       return res.status(200).json({ token });
     }
   } catch (error) {}
+};
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SEC, {
+    expiresIn: '30d',
+  });
 };
 module.exports = {
   Login,
