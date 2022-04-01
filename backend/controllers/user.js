@@ -17,6 +17,12 @@ const storage = multer.diskStorage({
   },
 });
 
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SEC, {
+    expiresIn: '30d',
+  });
+};
+
 const upload = multer({ storage: storage });
 
 const Login = async (req, res, next) => {
@@ -72,6 +78,8 @@ const Signup = async (req, res, next) => {
         phoneNumber: req.body.phoneNumber,
         username: req.body.username,
         interest: req.body.interest,
+        token: crypto.randomBytes(16).toString('hex'),
+
         // picture: {
         //   data: fs.readFileSync(
         //     path.join(__dirname + '/uploads/' + req.file.filename)
@@ -82,16 +90,16 @@ const Signup = async (req, res, next) => {
       newUser.save();
       res.status(201).json(newUser);
       // generate token and save
-      const userNew =
-        (await User.findOne({ email: req.body.email })) ||
-        (await User.findOne({ phoneNumber: req.body.phoneNumber }));
+      // const userNew =
+      //   (await User.findOne({ email: req.body.email })) ||
+      //   (await User.findOne({ phoneNumber: req.body.phoneNumber }));
 
-      const accessToken = new Token({
-        _userId: userNew._id,
-        token: crypto.randomBytes(16).toString('hex'),
-      });
-      accessToken.save();
-      console.log(accessToken);
+      // const accessToken = new Token({
+      //   _userId: userNew._id,
+      //   token: crypto.randomBytes(16).toString('hex'),
+      // });
+      // accessToken.save();
+      // console.log(accessToken);
 
       // console.log(accessToken);
 
@@ -110,7 +118,7 @@ const Signup = async (req, res, next) => {
           '/confirmation/' +
           req.body.email +
           '/' +
-          accessToken.token +
+          newUser.token +
           '\n\nThank You!\n',
       };
       sgMail
@@ -131,15 +139,7 @@ const getUser = async (req, res) => {
     res.status(500).json(err);
   }
 };
-const getToken = async (req, res) => {
-  try {
-    const token = await Token.findOne({ _userId: req.params.id });
 
-    res.status(200).json(token);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-};
 const getAllUser = async (req, res) => {
   const query = req.query.new;
   try {
@@ -156,7 +156,7 @@ const getAllUser = async (req, res) => {
 //    app.get('/confirmation/:email/:token',confirmEmail)
 
 const ConfirmEmail = async (req, res, next) => {
-  const accessToken = await Token.findOne({ token: req.params.token });
+  const accessToken = await User.findOne({ token: req.params.token });
   try {
     if (!accessToken) {
       return res.status(400).send({
@@ -166,7 +166,6 @@ const ConfirmEmail = async (req, res, next) => {
     // if token is found then check valid user
     else {
       const user = await User.findOne({
-        _id: accessToken._id,
         email: req.params.email,
       });
       // not valid user
@@ -225,11 +224,11 @@ const ResendLink = async (req, res, next) => {
     // send verification link
     else {
       // generate token and save
-      const accessToken = new Token({
-        _userId: user._id,
-        token: crypto.randomBytes(16).toString('hex'),
-      });
-      accessToken.save();
+      // const accessToken = new Token({
+      //   _userId: user._id,
+      //   token: crypto.randomBytes(16).toString('hex'),
+      // });
+      // accessToken.save();
       // console.log(accessToken);
 
       // Send email (use verified sender's email address & generated API_KEY on SendGrid)
@@ -247,7 +246,7 @@ const ResendLink = async (req, res, next) => {
           '/confirmation/' +
           user.email +
           '/' +
-          accessToken.token +
+          user.token +
           '\n\nThank You!\n',
       };
 
@@ -318,5 +317,4 @@ module.exports = {
   updateEmail,
   getUser,
   getAllUser,
-  getToken,
 };
