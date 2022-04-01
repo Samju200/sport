@@ -294,11 +294,7 @@ const getToken = async (req, res) => {
     }
   } catch (error) {}
 };
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SEC, {
-    expiresIn: '30d',
-  });
-};
+
 module.exports = {
   Login,
   Signup,
