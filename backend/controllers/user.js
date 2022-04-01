@@ -81,7 +81,7 @@ const Signup = async (req, res, next) => {
         // },
       });
       newUser.save();
-
+      res.status(201).json(newUser);
       // generate token and save
       const userNew =
         (await User.findOne({ email: req.body.email })) ||
@@ -95,7 +95,7 @@ const Signup = async (req, res, next) => {
       console.log(accessToken);
 
       // console.log(accessToken);
-      res.status(201).json({ userNew, accessToken });
+      // res.status(201).json({ userNew, accessToken });
       // Send email (use verified sender's email address & generated API_KEY on SendGrid)
       sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 
