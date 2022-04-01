@@ -20,7 +20,7 @@ function Navbar() {
         <Link to="/">SPORT GAMING </Link>
       </div>
       <ul className="nav">
-        {user.isVerify ? (
+        {user ? (
           <li>
             <button className="btn" onClick={onLogout}>
               <FaSignOutAlt /> Logout

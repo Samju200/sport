@@ -4,7 +4,7 @@ function Landing() {
   return (
     <div>
       <h1>LANDING PAGE</h1>
-      <P>WELCOME TO YOUR BEST SPORT SITE</P>
+      <p>WELCOME TO YOUR BEST SPORT SITE</p>
     </div>
   );
 }
