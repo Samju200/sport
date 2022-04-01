@@ -32,11 +32,11 @@ function Register() {
       toast.error(message);
     }
 
-    if (user.isVerify) {
-      navigate('/dashboard');
-    } else {
-      navigate('/verification');
-    }
+    // if (user.isVerify) {
+    //   navigate('/dashboard');
+    // } else {
+    //   navigate('/verification');
+    // }
 
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
