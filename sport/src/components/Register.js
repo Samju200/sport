@@ -67,7 +67,7 @@ function Register() {
     return <Spinner />;
   }
   if (isSuccess || user) {
-    navigate('/login');
+    navigate('/verification');
   }
   return (
     <>

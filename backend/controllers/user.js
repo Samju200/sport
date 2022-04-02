@@ -108,6 +108,7 @@ const Signup = async (req, res, next) => {
           ',\n\n' +
           'Please verify your account by clicking the link: \nhttp://' +
           req.headers.host +
+          '/users/' +
           '/confirmation/' +
           userNew._id +
           '/' +
@@ -139,29 +140,21 @@ const getUser = async (req, res) => {
 const ConfirmEmail = async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.params.id });
-    if (!user) {
-      return res.status(400).send({
-        msg: 'Invalid link.',
-      });
-    }
+    if (!user) return res.status(400).send({ msg: 'Invalid link oooo.' });
 
     // if token is found then check valid user
-    else {
-      const token = await Token.findOne({
-        _userId: user.id,
-        token: req.params.token,
-      });
-      // not valid user
-      if (!token) {
-        return res.status(401).send({
-          msg: 'We were unable to find a user for this verification. Please SignUp!',
-        });
-      }
-      // user is already verified
-      await User.updateOne({ _id: user._id, isVerified: true });
-      await token.remove();
-      res.status(200).send({ msg: 'email verify' });
-    }
+    const token = await Token.findOne({
+      token: req.params.token,
+    });
+    // not valid user
+    if (!token)
+      return res
+        .status(401)
+        .send({ msg: 'We were unable to find user. Please SignUp!' });
+
+    await User.updateOne({ _id: user._id, isVerified: true });
+    await token.remove();
+    res.status(200).send({ msg: 'email verify' });
   } catch (error) {
     res.status(500).json({ message: 'something went wrong' });
   }

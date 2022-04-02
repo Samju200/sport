@@ -14,7 +14,7 @@ router.post('/login', Login);
 router.get('/:id', getUser);
 router.get('/:id/token', getToken);
 
-router.get('/confirmation/:email/:token', ConfirmEmail);
+router.get('/confirmation/:id/:token', ConfirmEmail);
 router.post('/:id/resend', ResendLink);
 // router.get('/:id', updatePassword);
 const DIR = './public/';
