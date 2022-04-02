@@ -16,11 +16,14 @@ function App() {
         <div className="App">
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/confirmation/:id/:token" element={<Verification />} />
+            <Route
+              path="/users/confirmation/:id/:token"
+              element={<Verification />}
+            />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="verification" element={<Verify />} />
+            <Route path="/verification" element={<Verify />} />
           </Routes>
         </div>
       </Router>
