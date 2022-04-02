@@ -31,6 +31,11 @@ function Login() {
     // }
     if (user) {
       navigate('/dashboard');
+    } else {
+      <p>
+        {' '}
+        User not found, go and <Link>Register</Link> here
+      </p>;
     }
 
     dispatch(reset());

@@ -13,11 +13,11 @@ const initialState = {
 };
 
 // Register user
-export const getToken = createAsyncThunk(
+export const verification = createAsyncThunk(
   'auth/token',
   async (token, thunkAPI) => {
     try {
-      return await authService.getToken(token);
+      return await authService.verification(token);
     } catch (error) {
       const message =
         (error.response &&
