@@ -109,7 +109,7 @@ const Signup = async (req, res, next) => {
           'Please verify your account by clicking the link: \nhttp://' +
           req.headers.host +
           '/confirmation/' +
-          req.body.email +
+          userNew._id +
           '/' +
           accessToken.token +
           '\n\nThank You!\n',
@@ -136,48 +136,31 @@ const getUser = async (req, res) => {
 // It is GET method, you have to write like that
 //    app.get('/confirmation/:email/:token',confirmEmail)
 
-const ConfirmEmail = async (req, res, next) => {
-  const accessToken = await Token.findOne({ token: req.params.token });
+const ConfirmEmail = async (req, res) => {
   try {
-    if (!accessToken) {
+    const user = await User.findOne({ _id: req.params.id });
+    if (!user) {
       return res.status(400).send({
-        msg: 'Your verification link may have expired. Please click on resend for verify your Email.',
+        msg: 'Invalid link.',
       });
     }
+
     // if token is found then check valid user
     else {
-      const user = await User.findOne({
-        email: req.params.email,
+      const token = await Token.findOne({
+        _userId: user.id,
+        token: req.params.token,
       });
       // not valid user
-      if (!user) {
+      if (!token) {
         return res.status(401).send({
           msg: 'We were unable to find a user for this verification. Please SignUp!',
         });
       }
       // user is already verified
-      else if (user.isVerified) {
-        return res
-          .status(200)
-          .send('User has been already verified. Please Login');
-      }
-      // verify user
-      else {
-        // change isVerified to true
-        user.isVerified = true;
-        user.save(function (err) {
-          // error occur
-          if (err) {
-            return res.status(500).send({ msg: err.message });
-          }
-          // account successfully verified
-          else {
-            return res
-              .status(200)
-              .send('Your account has been successfully verified');
-          }
-        });
-      }
+      await User.updateOne({ _id: user._id, isVerified: true });
+      await token.remove();
+      res.status(200).send({ msg: 'email verify' });
     }
   } catch (error) {
     res.status(500).json({ message: 'something went wrong' });
@@ -218,7 +201,7 @@ const ResendLink = async (req, res, next) => {
           'Please verify your account by clicking the link: \nhttp://' +
           req.headers.host +
           '/confirmation/' +
-          user.email +
+          user._id +
           '/' +
           token.token +
           '\n\nThank You!\n',

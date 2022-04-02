@@ -4,9 +4,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaUser } from 'react-icons/fa';
-import { register, reset, Verification } from '../features/auth/authSlice';
+import { register, reset } from '../features/auth/authSlice';
 import Spinner from './Spinner';
-import { verification } from '../features/auth/tokenSlice';
+// import { verification } from '../features/auth/tokenSlice';
 // import { getToken } from '../../../backend/controllers/user';
 
 function Register() {
@@ -26,7 +26,7 @@ function Register() {
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
-  const { token } = useSelector((state) => state.token);
+  // const { token } = useSelector((state) => state.token);
 
   useEffect(() => {
     if (isError) {
@@ -61,7 +61,6 @@ function Register() {
     };
 
     dispatch(register(userData));
-    dispatch(Verification(token));
   };
 
   if (isLoading) {

@@ -16,24 +16,24 @@ const register = async (userData) => {
 };
 
 // verify
-const verification = async (userToken) => {
-  const { email, token } = useParams();
-  const response = await axios.get(`confirmation${email}${token}`, userToken);
-  if (response.data) {
-    localStorage.setItem('token', JSON.stringify(response.data));
-    console.log(token);
-  }
+// const verification = async (userToken) => {
+//   const { email, token } = useParams();
+//   const response = await axios.get(`confirmation${email}${token}`, userToken);
+//   if (response.data) {
+//     localStorage.setItem('token', JSON.stringify(response.data));
+//     console.log(token);
+//   }
 
-  return response.data.isVerified;
-};
-const resendVerification = async (userData, id) => {
-  const response = await axios.get(`users/${id}resend`, userData);
-  if (response.data) {
-    localStorage.setItem('user', JSON.stringify(response.data));
-  }
+//   return response.data.isVerified;
+// };
+// const resendVerification = async (userData, id) => {
+//   const response = await axios.get(`users/${id}resend`, userData);
+//   if (response.data) {
+//     localStorage.setItem('user', JSON.stringify(response.data));
+//   }
 
-  return response.data.isVerified;
-};
+//   return response.data.isVerified;
+// };
 // Login user
 const login = async (userData) => {
   const response = await axios.post(API_URL_LOGIN, userData);
@@ -63,9 +63,8 @@ const authService = {
   register,
   logout,
   login,
-  verification,
+
   getUser,
-  resendVerification,
 };
 
 export default authService;

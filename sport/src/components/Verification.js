@@ -2,13 +2,16 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Verify from './Verify';
+import { verification } from '../features/auth/tokenSlice';
+import axios from 'axios';
 
 function Verification() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id } = useParams();
-  const { user, resendVerification } = useSelector((state) => state.auth);
-  const { token } = useSelector((state) => state.token);
+  const { id, token } = useParams();
+  const { user } = useSelector((state) => state.auth);
+  // const { token } = useSelector((state) => state.token);
+  const [validUrl, setValidUrl] = useState(false);
   // const resendVerify = () => {
   //   if (user) {
   //     alert('Your Account is verify');
@@ -18,25 +21,40 @@ function Verification() {
   //   }
   // };
   useEffect(() => {
-    if (!user.isVerified) {
-      // <Link to={`/confirmation/${user.email}/${token.token}`}>
-      <Verify />;
-      // </Link>;
-    }
-  }, []);
+    const verifyEmail = async () => {
+      try {
+        const url = `https://samju-sport.herokuapp.com/users/confirmation${id}/${token}`;
+        const { data } = await axios.get(url);
+        console.log(data);
+        setValidUrl(true);
+      } catch (error) {
+        console.log(error);
+        setValidUrl(false);
+      }
+    };
+    verifyEmail();
+  }, [id, token]);
   return (
-    <div className="verification">
-      <h1>Verification</h1>
+    <>
+      <div className="verification">
+        <h1>Verification</h1>
 
-      <div>
-        <p className="verify">
-          if you have not Register , Register <Link to="/register"> here</Link>{' '}
-          and resend verification link, if your account is not verify or check
-          your email for confirmation of your verification{' '}
-          <Link to={resendVerification}>click</Link>
-        </p>
+        <div>
+          {validUrl ? (
+            <div>
+              {' '}
+              <h1> Email verified Successfully</h1>
+              <Link to="/login">
+                {' '}
+                <button> Login</button>
+              </Link>{' '}
+            </div>
+          ) : (
+            <h1> 404 not found</h1>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
