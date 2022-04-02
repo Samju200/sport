@@ -23,7 +23,7 @@ function Verification() {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const url = `https://samju-sport.herokuapp.com/users/confirmation${id}/${token}`;
+        const url = `/users/confirmation${id}/${token}`;
         const { data } = await axios.get(url);
         console.log(data);
         setValidUrl(true);
