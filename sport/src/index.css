@@ -101,7 +101,14 @@ h3 {
 .verify > a {
   color: blue;
 }
-
+.profile > h1 {
+  text-transform: uppercase;
+}
+.profile > p {
+  text-align: left;
+  padding: 20px;
+  text-transform: capitalize;
+}
 .form-group {
   margin-bottom: 10px;
 }

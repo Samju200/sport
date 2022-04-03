@@ -4,15 +4,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { login, resendVerification, reset } from '../features/auth/authSlice';
+import Dashboard from './Dashboard';
 import Spinner from './Spinner';
 
 function Login() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    phoneNumber: '',
   });
 
-  const { email, password } = formData;
+  const { email, password, phoneNumber } = formData;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -26,15 +28,12 @@ function Login() {
       toast.error(message);
     }
 
-    // if (isSuccess || user.isV) {
-    //   navigate('/');
-    // }
-    if (user) {
+    if (isSuccess || user) {
       navigate('/dashboard');
     } else {
       <p>
         {' '}
-        User not found, go and <Link>Register</Link> here
+        User not found, go and <Link to="/register">Register</Link> here
       </p>;
     }
 
@@ -54,6 +53,7 @@ function Login() {
     const userData = {
       email,
       password,
+      phoneNumber,
     };
 
     dispatch(login(userData));
@@ -76,12 +76,12 @@ function Login() {
         <form onSubmit={onSubmit}>
           <div className="form-group">
             <input
-              type="email"
+              type="text"
               className="form-control"
               id="email"
               name="email"
-              value={email}
-              placeholder="Enter your email"
+              value={email || phoneNumber}
+              placeholder="Enter your email/ Phone Number"
               onChange={onChange}
             />
           </div>
@@ -103,13 +103,14 @@ function Login() {
             </button>
           </div>
         </form>
+        <p>{message}</p>
 
         <div>
           <p className="verify">
             if you have not Register , Register{' '}
             <Link to="/register"> here</Link> and resend verification link, if
             your account is not verify or check your email for confirmation of
-            your verification <Link to="/verification">click</Link>
+            your verification <Link to="/users/:id/resend">click</Link>
           </p>
         </div>
       </section>

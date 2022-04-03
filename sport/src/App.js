@@ -7,6 +7,8 @@ import Navbar from './components/Navbar';
 import Landing from './components/Landing';
 import Verification from './components/Verification';
 import Verify from './components/Verify';
+import ResendVerification from './components/ResendVerification';
+import Profile from './components/Profile';
 
 function App() {
   return (
@@ -21,9 +23,11 @@ function App() {
               element={<Verification />}
             />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verification" element={<Verify />} />
+            <Route path="/users/:id/resend" element={<ResendVerification />} />
           </Routes>
         </div>
       </Router>

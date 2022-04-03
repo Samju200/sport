@@ -12,14 +12,7 @@ function Verification() {
   const { user } = useSelector((state) => state.auth);
   // const { token } = useSelector((state) => state.token);
   const [validUrl, setValidUrl] = useState(false);
-  // const resendVerify = () => {
-  //   if (user) {
-  //     alert('Your Account is verify');
-  //     navigate('/login');
-  //   } else {
-  //     dispatch(resendVerification(id));
-  //   }
-  // };
+
   useEffect(() => {
     const verifyEmail = async () => {
       try {
